@@ -67,7 +67,7 @@ public class ImageUtil {
         }
     }
 
-    
+
     private Mat makeHoleByThreshold(Mat imageForMasking, Mat mask, double threshold) {
 
         for (int i = 0; i < imageForMasking.cols(); i++) {

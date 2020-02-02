@@ -12,7 +12,6 @@ public class DefaultHoleFillerUtil implements IHoleFillerUtil {
     private IWeightFunctionsUtil weightFunctionsUtil = new DefaultWeightFunctionsUtil();
 
     public void fillHole(Mat holedImage, Set<PixelDTO> boundaryPixelDTOs, Set<PixelDTO> holePixelDTOs, double zValue, double epsilonValue) {
-
         double weightValue;
         double numeratorSum = 0;
         double denominatorSum = 0;
@@ -20,7 +19,7 @@ public class DefaultHoleFillerUtil implements IHoleFillerUtil {
         for (PixelDTO holePixelDTO : holePixelDTOs) {
             for (PixelDTO boundaryPixelDTO : boundaryPixelDTOs) {
                 weightValue = weightFunctionsUtil.calculateValue(holePixelDTO, boundaryPixelDTO, zValue, epsilonValue);
-                numeratorSum = weightValue * boundaryPixelDTO.getValue();
+                numeratorSum += weightValue * boundaryPixelDTO.getValue();
                 denominatorSum += weightValue;
             }
             double[] holePixelData = holedImage.get(holePixelDTO.getYCoordinate(), holePixelDTO.getXCoordinate());

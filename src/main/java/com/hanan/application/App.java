@@ -43,16 +43,11 @@ public class App {
                     epsilonValue = args[++i];
             }
             validateArguments(sourceImage, maskImage, connectivityType, epsilonValue, zValue);
+
             ImageUtil imageUtil = new ImageUtil();
 
-            Mat rgbImage = imageUtil.getRGBImageByFileName(sourceImage);
-            System.out.println("Initial rgbImage data:\n" + rgbImage.dump());
-
             Mat greyscaleImage = imageUtil.getGrayScaleImageByFileName(sourceImage);
-            System.out.println("Initial greyscaleImage data:\n" + greyscaleImage.dump());
-
             Mat holedImage = imageUtil.applyMask(greyscaleImage, maskImage);
-            System.out.println("Initial holedImage data:\n" + holedImage.dump());
 
             Set<PixelDTO> boundaryPixelDTOs = new HashSet<PixelDTO>();
             Set<PixelDTO> holePixelDTOs = new HashSet<PixelDTO>();
@@ -60,10 +55,9 @@ public class App {
 
             IHoleFillerUtil holeFillerUtil = new DefaultHoleFillerUtil();
             holeFillerUtil.fillHole(holedImage, boundaryPixelDTOs, holePixelDTOs, Double.parseDouble(zValue), Double.parseDouble(epsilonValue));
-            System.out.println("Result Mat data:\n" + holedImage.dump());
 
             Mat resultMat = new Mat();
-            holedImage.convertTo(resultMat, CvType.CV_32F, 255);
+            holedImage.convertTo(resultMat, CvType.CV_32F, 255.0);
             Imgcodecs.imwrite("C:\\Users\\hananp\\Desktop\\Projects\\Hole-Filling\\code\\hole-filling-2\\src\\main\\resources\\result.jpg", resultMat);
         }
     }

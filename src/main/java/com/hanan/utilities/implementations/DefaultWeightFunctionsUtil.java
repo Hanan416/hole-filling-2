@@ -6,7 +6,7 @@ import com.hanan.utilities.interfaces.IWeightFunctionsUtil;
 public class DefaultWeightFunctionsUtil implements IWeightFunctionsUtil {
 
     public double calculateValue(PixelDTO u, PixelDTO v, double zValue, double epsilonValue) {
-        return 1 / (Math.pow(getEuclideanDistance(u, v), zValue) + epsilonValue);
+        return (1 / (Math.pow(getEuclideanDistance(u, v), zValue) + epsilonValue));
     }
 
     private double getEuclideanDistance(PixelDTO u, PixelDTO v) {
