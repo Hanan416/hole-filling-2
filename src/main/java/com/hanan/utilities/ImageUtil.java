@@ -53,9 +53,9 @@ public class ImageUtil {
                     if (right < holedImage.cols() && holedImage.get(j, right)[0] != -1)
                         boundaryPixelDTOs.add(new PixelDTO(right, j, holedImage.get(j, right)[0]));
                     if (AppConfig.EIGHT_CONNECTED.equals(connectivityType)) {
-                        if (up >= 0 && left >= 0 && holedImage.get(left, up)[0] != -1)
+                        if (up >= 0 && left >= 0 && holedImage.get(up, left)[0] != -1)
                             boundaryPixelDTOs.add(new PixelDTO(left, up, holedImage.get(up, left)[0]));
-                        if (up >= 0 && right < holedImage.cols() && holedImage.get(right, up)[0] != -1)
+                        if (up >= 0 && right < holedImage.cols() && holedImage.get(up, right)[0] != -1)
                             boundaryPixelDTOs.add(new PixelDTO(right, up, holedImage.get(up, right)[0]));
                         if (down < holedImage.rows() && left >= 0 && holedImage.get(down, left)[0] != -1)
                             boundaryPixelDTOs.add(new PixelDTO(left, down, holedImage.get(down, left)[0]));
