@@ -4,16 +4,13 @@ import com.hanan.config.AppConfig;
 import com.hanan.holefilling.implementation.DefaultHoleFiller;
 import com.hanan.holefilling.interfaces.IHoleFillerBase;
 import com.hanan.utilities.ImageProcessingUtil;
+import com.hanan.utilities.LoadLibrary;
 import com.hanan.weightfunctions.implementation.DefaultWeightFunction;
 import com.hanan.weightfunctions.interfaces.IWeightFunctionsBase;
 import org.apache.commons.lang3.StringUtils;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
 public class App {
-    static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
 
     private static String sourceImage = null;
     private static String maskImage = null;
@@ -22,20 +19,21 @@ public class App {
     private static String zValueStr = null;
 
     public static void main(String[] args) {
+        LoadLibrary.loadOpenCV();
+        if (readArgs(args)) {
+            validateArguments();
+            ImageProcessingUtil imageProcessingUtil = initImageProcessingUtil(sourceImage, maskImage, connectivityType);
+            Mat holedImage = imageProcessingUtil.applyMask();
 
-        readArgs(args);
-        validateArguments();
-        ImageProcessingUtil imageProcessingUtil = initImageProcessingUtil(sourceImage, maskImage, connectivityType);
-        Mat holedImage = imageProcessingUtil.applyMask();
+            float zValue = getFloatValue(zValueStr, "zValue");
+            float epsilonValue = getFloatValue(epsilonValueStr, "epsilonValue");
+            IWeightFunctionsBase defaultWeightFunction = new DefaultWeightFunction(zValue, epsilonValue);
 
-        float zValue = getFloatValue(zValueStr, "zValue");
-        float epsilonValue = getFloatValue(epsilonValueStr, "epsilonValue");
-        IWeightFunctionsBase defaultWeightFunction = new DefaultWeightFunction(zValue, epsilonValue);
+            IHoleFillerBase defaultHoleFiller = new DefaultHoleFiller();
+            defaultHoleFiller.fillHole(holedImage, imageProcessingUtil.getBoundaryPixelDTOs(), imageProcessingUtil.getHolePixelDTOs(), defaultWeightFunction);
 
-        IHoleFillerBase defaultHoleFiller = new DefaultHoleFiller();
-        defaultHoleFiller.fillHole(holedImage, imageProcessingUtil.getBoundaryPixelDTOs(), imageProcessingUtil.getHolePixelDTOs(), defaultWeightFunction);
-
-        imageProcessingUtil.writeResult();
+            imageProcessingUtil.writeResult();
+        }
     }
 
     private static ImageProcessingUtil initImageProcessingUtil(String sourceImage, String maskImage, String connectivityType) {
@@ -46,14 +44,15 @@ public class App {
         return imageProcessingUtil;
     }
 
-    private static void readArgs(String[] inputArg) {
+    private static boolean readArgs(String[] inputArg) {
         if (inputArg.length > 0 && inputArg[0].equals("-h")) {
             usagePrint();
+            return false;
         } else {
             for (int i = 0; i < inputArg.length; i++) {
-                if ((inputArg[i].equals("-i") || inputArg[i].equals("-ip")) && sourceImage == null)
+                if (inputArg[i].equals("-i") && sourceImage == null)
                     sourceImage = inputArg[++i];
-                if ((inputArg[i].equals("-m") || inputArg[i].equals("-mp")) && maskImage == null)
+                if (inputArg[i].equals("-m") && maskImage == null)
                     maskImage = inputArg[++i];
                 if (inputArg[i].equals("-k") && connectivityType == null)
                     connectivityType = inputArg[++i];
@@ -62,6 +61,7 @@ public class App {
                 if (inputArg[i].equals("-ep") && epsilonValueStr == null)
                     epsilonValueStr = inputArg[++i];
             }
+            return true;
         }
     }
 
@@ -80,20 +80,14 @@ public class App {
                     "got: sourceImage: " + sourceImage + ", maskImage: " + maskImage + ", connectivityType:" + connectivityType + ", epsilonValue:" + epsilonValueStr + ", zValue:" + zValueStr);
         } else if (!AppConfig.CONNECTIVITY_TYPES.contains(connectivityType)) {
             throw new RuntimeException("Invalid connectivityType, expected on of: " + AppConfig.CONNECTIVITY_TYPES.toString() + ", got:" + connectivityType);
-        } /*else if (!checkDoubleParsing(epsilonValue)) {
-            throw new RuntimeException("Invalid epsilonValue, expected double, got: " + epsilonValue);
-        } else if (!checkDoubleParsing(zValue)) {
-            throw new RuntimeException("Invalid zValue, expected double, got: " + zValue);
-        }*/
+        }
     }
 
     private static void usagePrint() {
         System.out.println("usage: holeFilling [options]\n" +
                 "where options are:\n" +
-                "\t-i <value>\t: source image file name, use this flag when the image is withing the app folder\n" +
-                "\t-ip <value>\t: source image full path, use this flag when the image is outside the app folder\n" +
-                "\t-m <value>\t: mask image file name, use this flag when the mask image is withing the app folder\n" +
-                "\t-mp <value>\t: mask image full path, use this flag when the mask image is outside the app folder\n" +
+                "\t-i <value>\t: source image full path\n" +
+                "\t-m <value>\t: mask image full path\n" +
                 "\t-k <value>\t: the connectivity type for each pixel, the supported types are: " + AppConfig.CONNECTIVITY_TYPES.toString() + "\n" +
                 "\t-z <value>\t: z value for the weighting function power\n" +
                 "\t-ep <value>\t: epsilon small double value for the weighting function zero division escape\n" +

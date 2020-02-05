@@ -22,7 +22,6 @@
         <opencvjar.version>3.0.0</opencvjar.version>
         <maven.jar.version>3.2.0</maven.jar.version>
         <maven.dependency.version>3.1.0</maven.dependency.version>
-        <maven.nativedependencies.version>0.0.7</maven.nativedependencies.version>
         <apache.common.lang3.version>3.9</apache.common.lang3.version>
     </properties>
 
@@ -39,13 +38,6 @@
             <groupId>org.javaopencvbook</groupId>
             <artifactId>opencvjar</artifactId>
             <version>${opencvjar.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.javaopencvbook</groupId>
-            <artifactId>opencvjar-runtime</artifactId>
-            <version>${opencvjar.version}</version>
-            <classifier>natives-windows-x86_64</classifier>
         </dependency>
 
         <dependency>
@@ -91,20 +83,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>com.googlecode.mavennatives</groupId>
-                <artifactId>maven-nativedependencies-plugin</artifactId>
-                <version>${maven.nativedependencies.version}</version>
-                <executions>
-                    <execution>
-                        <id>unpacknatives</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -121,5 +99,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
