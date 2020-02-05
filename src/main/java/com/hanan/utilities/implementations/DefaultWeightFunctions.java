@@ -3,9 +3,17 @@ package com.hanan.utilities.implementations;
 import com.hanan.models.PixelDTO;
 import com.hanan.utilities.interfaces.IWeightFunctionsUtil;
 
-public class DefaultWeightFunctionsUtil implements IWeightFunctionsUtil {
+public class DefaultWeightFunctions implements IWeightFunctionsUtil {
 
-    public double calculateValue(PixelDTO u, PixelDTO v, double zValue, double epsilonValue) {
+    private double zValue;
+    private double epsilonValue;
+
+    public DefaultWeightFunctions(double zValue, double epsilonValue) {
+        this.zValue = zValue;
+        this.epsilonValue = epsilonValue;
+    }
+
+    public double calculateValue(PixelDTO u, PixelDTO v) {
         return (1 / (Math.pow(getEuclideanDistance(u, v), zValue) + epsilonValue));
     }
 

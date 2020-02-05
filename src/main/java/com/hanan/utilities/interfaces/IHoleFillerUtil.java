@@ -7,5 +7,5 @@ import java.util.Set;
 
 public interface IHoleFillerUtil {
 
-    void fillHole(Mat holedImage, Set<PixelDTO> boundaryPixelDTOs, Set<PixelDTO> holePixelDTOs, double zValue, double epsilonValue);
+    void fillHole(Mat holedImage, Set<PixelDTO> boundaryPixelDTOs, Set<PixelDTO> holePixelDTOs, IWeightFunctionsUtil weightFunctionsUtil);
 }

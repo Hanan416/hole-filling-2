@@ -9,16 +9,15 @@ import java.util.Set;
 
 public class DefaultHoleFillerUtil implements IHoleFillerUtil {
 
-    private IWeightFunctionsUtil weightFunctionsUtil = new DefaultWeightFunctionsUtil();
 
-    public void fillHole(Mat holedImage, Set<PixelDTO> boundaryPixelDTOs, Set<PixelDTO> holePixelDTOs, double zValue, double epsilonValue) {
+    public void fillHole(Mat holedImage, Set<PixelDTO> boundaryPixelDTOs, Set<PixelDTO> holePixelDTOs, IWeightFunctionsUtil weightFunctionsUtil) {
         double weightValue;
         double numeratorSum = 0;
         double denominatorSum = 0;
 
         for (PixelDTO holePixelDTO : holePixelDTOs) {
             for (PixelDTO boundaryPixelDTO : boundaryPixelDTOs) {
-                weightValue = weightFunctionsUtil.calculateValue(holePixelDTO, boundaryPixelDTO, zValue, epsilonValue);
+                weightValue = weightFunctionsUtil.calculateValue(holePixelDTO, boundaryPixelDTO);
                 numeratorSum += weightValue * boundaryPixelDTO.getValue();
                 denominatorSum += weightValue;
             }

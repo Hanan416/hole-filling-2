@@ -6,33 +6,54 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class ImageUtil {
 
-    public Mat getRGBImageByFileName(String filename) {
+    private Mat sourceImage;
+    private Mat maskImage;
+    private Mat holedImage;
+    private String connectivityType;
+    private Set<PixelDTO> boundaryPixelDTOs = new HashSet<PixelDTO>();
+    private Set<PixelDTO> holePixelDTOs = new HashSet<PixelDTO>();
 
-        Mat m = Imgcodecs.imread(filename, Imgcodecs.IMREAD_COLOR);
-        Mat mNormalized = new Mat();
-        m.convertTo(mNormalized, CvType.CV_32F, 1.f / 255);
-
-        return mNormalized;
+    public ImageUtil(String sourceImageStr, String maskImageStr, String connectivityType) {
+        sourceImage = getGrayScaleImageByFileName(sourceImageStr);
+        maskImage = getGrayScaleImageByFileName(maskImageStr);
+        holedImage = getGrayScaleImageByFileName(sourceImageStr);
+        this.connectivityType = connectivityType;
     }
 
-    public Mat getGrayScaleImageByFileName(String filename) {
-        Mat m = Imgcodecs.imread(filename, Imgcodecs.IMREAD_GRAYSCALE);
-        Mat mNormalized = new Mat();
-        m.convertTo(mNormalized, CvType.CV_32F, 1.f / 255);
-
-        return mNormalized;
+    public Set<PixelDTO> getBoundaryPixelDTOs() {
+        return boundaryPixelDTOs;
     }
 
-    public Mat applyMask(Mat origImage, String maskFileName) {
-        Mat maskingImg = getGrayScaleImageByFileName(maskFileName);
-        return makeHoleByThreshold(origImage, maskingImg, AppConfig.HOLE_THRESHOLD);
+    public Set<PixelDTO> getHolePixelDTOs() {
+        return holePixelDTOs;
     }
 
-    public void initializePixelDTOsData(Mat holedImage, Set<PixelDTO> boundaryPixelDTOs, Set<PixelDTO> holePixelDTOs, String connectivityType) {
+    public Mat applyMask() {
+        for (int i = 0; i < sourceImage.cols(); i++) {
+            for (int j = 0; j < sourceImage.rows(); j++) {
+                double[] pixelData = sourceImage.get(j, i);
+                double[] pixelMaskData = maskImage.get(j, i);
+                pixelData[0] = pixelMaskData[0] <= AppConfig.HOLE_THRESHOLD ? -1 : pixelData[0];
+                holedImage.put(j, i, pixelData);
+            }
+        }
+        initializePixelDTOsData();
+        return holedImage;
+    }
+
+    public void writeResult() {
+        Mat resultMat = new Mat();
+        holedImage.convertTo(resultMat, CvType.CV_32F, 255.0);
+        String path = System.getProperty("user.dir") + "\\result.jpg";
+        Imgcodecs.imwrite(path, resultMat);
+    }
+
+    private void initializePixelDTOsData() {
         for (int i = 0; i < holedImage.cols(); i++) {
             for (int j = 0; j < holedImage.rows(); j++) {
                 double pixelData = holedImage.get(j, i)[0];
@@ -67,18 +88,12 @@ public class ImageUtil {
         }
     }
 
+    private Mat getGrayScaleImageByFileName(String filename) {
+        Mat m = Imgcodecs.imread(filename, Imgcodecs.IMREAD_GRAYSCALE);
+        Mat mNormalized = new Mat();
+        m.convertTo(mNormalized, CvType.CV_32F, 1.f / 255);
 
-    private Mat makeHoleByThreshold(Mat imageForMasking, Mat mask, double threshold) {
-
-        for (int i = 0; i < imageForMasking.cols(); i++) {
-            for (int j = 0; j < imageForMasking.rows(); j++) {
-                double[] pixelData = imageForMasking.get(j, i);
-                double[] pixelMaskData = mask.get(j, i);
-                pixelData[0] = pixelMaskData[0] <= threshold ? -1 : pixelData[0];
-                imageForMasking.put(j, i, pixelData);
-            }
-        }
-        return imageForMasking;
+        return mNormalized;
     }
 
 
