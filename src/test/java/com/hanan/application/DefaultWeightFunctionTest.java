@@ -1,24 +1,24 @@
 package com.hanan.application;
 
 import com.hanan.models.PixelDTO;
-import com.hanan.utilities.implementations.DefaultWeightFunctions;
+import com.hanan.weightfunctions.implementation.DefaultWeightFunction;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DefaultWeightFunctionsUtilTest {
+public class DefaultWeightFunctionTest {
 
     private PixelDTO u;
     private PixelDTO v;
     private double zValue;
     private double epsilonValue;
-    private DefaultWeightFunctions defaultWeightFunction;
+    private DefaultWeightFunction defaultWeightFunction;
 
     @Test
     public void testValueCalculation_positiveZ() {
         zValue = 2.0;
         epsilonValue = 0.5;
 
-        defaultWeightFunction = new DefaultWeightFunctions(zValue, epsilonValue);
+        defaultWeightFunction = new DefaultWeightFunction(zValue, epsilonValue);
         u = new PixelDTO(3, 4, 0);
         v = new PixelDTO(5, 4, 0);
 
@@ -31,7 +31,7 @@ public class DefaultWeightFunctionsUtilTest {
     public void testValueCalculation_negativeZ() {
         zValue = -5.0;
         epsilonValue = 0.005;
-        defaultWeightFunction = new DefaultWeightFunctions(zValue, epsilonValue);
+        defaultWeightFunction = new DefaultWeightFunction(zValue, epsilonValue);
         u = new PixelDTO(3, 4, 0);
         v = new PixelDTO(8, 4, 0);
 

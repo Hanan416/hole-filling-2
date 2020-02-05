@@ -1,8 +1,8 @@
-package com.hanan.utilities.interfaces;
+package com.hanan.weightfunctions.interfaces;
 
 import com.hanan.models.PixelDTO;
 
-public interface IWeightFunctionsUtil {
+public interface IWeightFunctionsBase {
 
     double calculateValue(PixelDTO u, PixelDTO v);
 

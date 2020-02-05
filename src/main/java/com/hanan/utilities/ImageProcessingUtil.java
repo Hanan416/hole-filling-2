@@ -9,20 +9,28 @@ import org.opencv.imgcodecs.Imgcodecs;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ImageUtil {
+public class ImageProcessingUtil {
 
     private Mat sourceImage;
     private Mat maskImage;
     private Mat holedImage;
     private String connectivityType;
-    private Set<PixelDTO> boundaryPixelDTOs = new HashSet<PixelDTO>();
-    private Set<PixelDTO> holePixelDTOs = new HashSet<PixelDTO>();
+    private Set<PixelDTO> boundaryPixelDTOs;
+    private Set<PixelDTO> holePixelDTOs;
 
-    public ImageUtil(String sourceImageStr, String maskImageStr, String connectivityType) {
+    public ImageProcessingUtil() {
+        boundaryPixelDTOs = new HashSet<PixelDTO>();
+        holePixelDTOs = new HashSet<PixelDTO>();
+    }
+
+    public void initImages(String sourceImageStr, String maskImageStr) {
         sourceImage = getGrayScaleImageByFileName(sourceImageStr);
         maskImage = getGrayScaleImageByFileName(maskImageStr);
+
+        if (sourceImage.cols() != maskImage.cols() && sourceImage.rows() != maskImage.rows())
+            throw new RuntimeException(AppConfig.IMAGE_SIZE_MISMATCH_ERROR);
+
         holedImage = getGrayScaleImageByFileName(sourceImageStr);
-        this.connectivityType = connectivityType;
     }
 
     public Set<PixelDTO> getBoundaryPixelDTOs() {
@@ -31,6 +39,14 @@ public class ImageUtil {
 
     public Set<PixelDTO> getHolePixelDTOs() {
         return holePixelDTOs;
+    }
+
+    public void setHoledImage(Mat holedImage) {
+        this.holedImage = holedImage;
+    }
+
+    public void setConnectivityType(String connectivityType) {
+        this.connectivityType = connectivityType;
     }
 
     public Mat applyMask() {
@@ -50,10 +66,11 @@ public class ImageUtil {
         Mat resultMat = new Mat();
         holedImage.convertTo(resultMat, CvType.CV_32F, 255.0);
         String path = System.getProperty("user.dir") + "\\result.jpg";
+        System.out.println("Writing result to: " + path);
         Imgcodecs.imwrite(path, resultMat);
     }
 
-    private void initializePixelDTOsData() {
+    public void initializePixelDTOsData() {
         for (int i = 0; i < holedImage.cols(); i++) {
             for (int j = 0; j < holedImage.rows(); j++) {
                 double pixelData = holedImage.get(j, i)[0];

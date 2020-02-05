@@ -1,11 +1,11 @@
 package com.hanan.application;
 
 import com.hanan.config.AppConfig;
-import com.hanan.utilities.ImageUtil;
-import com.hanan.utilities.implementations.DefaultHoleFillerUtil;
-import com.hanan.utilities.implementations.DefaultWeightFunctions;
-import com.hanan.utilities.interfaces.IHoleFillerUtil;
-import com.hanan.utilities.interfaces.IWeightFunctionsUtil;
+import com.hanan.holefilling.implementation.DefaultHoleFiller;
+import com.hanan.holefilling.interfaces.IHoleFillerBase;
+import com.hanan.utilities.ImageProcessingUtil;
+import com.hanan.weightfunctions.implementation.DefaultWeightFunction;
+import com.hanan.weightfunctions.interfaces.IWeightFunctionsBase;
 import org.apache.commons.lang3.StringUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -25,19 +25,25 @@ public class App {
 
         readArgs(args);
         validateArguments();
-
-        ImageUtil imageUtil = new ImageUtil(sourceImage, maskImage, connectivityType);
-        Mat holedImage = imageUtil.applyMask();
+        ImageProcessingUtil imageProcessingUtil = initImageProcessingUtil(sourceImage, maskImage, connectivityType);
+        Mat holedImage = imageProcessingUtil.applyMask();
 
         float zValue = getFloatValue(zValueStr, "zValue");
         float epsilonValue = getFloatValue(epsilonValueStr, "epsilonValue");
-        IWeightFunctionsUtil defaultWeightFunction = new DefaultWeightFunctions(zValue, epsilonValue);
+        IWeightFunctionsBase defaultWeightFunction = new DefaultWeightFunction(zValue, epsilonValue);
 
-        IHoleFillerUtil defaultHoleFiller = new DefaultHoleFillerUtil();
-        defaultHoleFiller.fillHole(holedImage, imageUtil.getBoundaryPixelDTOs(), imageUtil.getHolePixelDTOs(), defaultWeightFunction);
+        IHoleFillerBase defaultHoleFiller = new DefaultHoleFiller();
+        defaultHoleFiller.fillHole(holedImage, imageProcessingUtil.getBoundaryPixelDTOs(), imageProcessingUtil.getHolePixelDTOs(), defaultWeightFunction);
 
-        imageUtil.writeResult();
+        imageProcessingUtil.writeResult();
+    }
 
+    private static ImageProcessingUtil initImageProcessingUtil(String sourceImage, String maskImage, String connectivityType) {
+        ImageProcessingUtil imageProcessingUtil = new ImageProcessingUtil();
+        imageProcessingUtil.initImages(sourceImage, maskImage);
+        imageProcessingUtil.setConnectivityType(connectivityType);
+
+        return imageProcessingUtil;
     }
 
     private static void readArgs(String[] inputArg) {

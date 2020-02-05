@@ -1,14 +1,14 @@
-package com.hanan.utilities.implementations;
+package com.hanan.weightfunctions.implementation;
 
 import com.hanan.models.PixelDTO;
-import com.hanan.utilities.interfaces.IWeightFunctionsUtil;
+import com.hanan.weightfunctions.interfaces.IWeightFunctionsBase;
 
-public class DefaultWeightFunctions implements IWeightFunctionsUtil {
+public class DefaultWeightFunction implements IWeightFunctionsBase {
 
     private double zValue;
     private double epsilonValue;
 
-    public DefaultWeightFunctions(double zValue, double epsilonValue) {
+    public DefaultWeightFunction(double zValue, double epsilonValue) {
         this.zValue = zValue;
         this.epsilonValue = epsilonValue;
     }
