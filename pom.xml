@@ -18,7 +18,7 @@
 
     <properties>
         <main.class.path>com.hanan.application.App</main.class.path>
-        <junit.version>4.13</junit.version>
+        <junit.version>4.13.1</junit.version>
         <opencvjar.version>3.0.0</opencvjar.version>
         <maven.jar.version>3.2.0</maven.jar.version>
         <maven.dependency.version>3.1.0</maven.dependency.version>
